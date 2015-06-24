@@ -4,6 +4,7 @@
 		<title>obj tester </title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!--link rel="stylesheet" type="text/css" href="mystyle.css"-->
 		<style>
 			body {
 				background:#fff;
@@ -13,6 +14,16 @@
 				font-family:georgia;
 				text-align:center;
 			}
+			/*@media (orientation: portrait) {
+				body {
+					-webkit-transform: rotate(90deg);
+					-moz-transform: rotate(90deg);
+					-o-transform: rotate(90deg);
+					-ms-transform: rotate(90deg);
+					transform: rotate(90deg);
+
+				}
+			}*/
 		</style>
 	</head>
  
@@ -28,6 +39,7 @@
 			var SCREEN_HEIGHT = window.innerHeight;
 			var windowHalfX = SCREEN_WIDTH / 2;
 			var windowHalfY = SCREEN_HEIGHT / 2;
+			var currentWidth = SCREEN_WIDTH;
  
 			var container, controls;
  
@@ -47,13 +59,19 @@
  
 			init();
 			animate();
- 
+screen.orientation.lock('landscape');
+console.log(screen.orientation);
+// window.screen.lockOrientation('portrait-secondary');
+ // screen.lockOrientation('landscape-primary');
 			function init() {
- 
+
+
 				container = document.createElement('div');
 				document.body.appendChild(container);
  				//iphone 6 width = 1334, height = 750
-				camera = new THREE.OrthographicCamera(-13.34, 13.34, 7.5, -7.5, 1, 10);
+ 				var screenScale = 1 / 100;
+ 				console.log(window.innerWidth * screenScale);
+				camera = new THREE.OrthographicCamera(-window.innerWidth * screenScale, window.innerWidth * screenScale, window.innerHeight * screenScale, -window.innerHeight * screenScale, 1, 10);
 				camera.position.set(0, 0, 5);
  
 				scene = new THREE.Scene();
@@ -65,7 +83,7 @@
 				var directionalLight = new THREE.DirectionalLight(0xffeedd);
 				directionalLight.position.set(100, 100, 100).normalize();
 				scene.add(directionalLight);
- 
+
 			 	// RENDERER
 				renderer = (window.WebGLRenderingContext) ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
 				renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -74,7 +92,7 @@
 				// CONTROLS
 				controls = new THREE.OrbitControls( camera, renderer.domElement );
 				controls.noRotate = true;
- 
+
 				container.appendChild(renderer.domElement);
  
  				<!-- load left -->
@@ -123,9 +141,7 @@
 			}
  
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
- 
+				camera.updateProjectionMatrix(); 
 				renderer.setSize(window.innerWidth, window.innerHeight);
 			}
  
@@ -144,14 +160,13 @@
 			function update()
 			{
 				controls.update();
+				updateLayout();
 			}
  
 			function render() {
 				camera.lookAt(scene.position);
 				renderer.render(scene, camera);
 			}
-
-			<!-- input -->
 
 			function onDocumentMouseDown( event ) 
 			{
